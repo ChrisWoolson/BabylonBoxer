@@ -177,8 +177,8 @@
         // Register a render loop to repeatedly render the scene
         var tick = 0;
         engine.runRenderLoop(function () {
-            tick++;
-            if(tick%1 == 0){
+            
+           
             const r = ref(database, '/Game/');
             onValue(r, (snapshot) => {
                 
@@ -192,7 +192,7 @@
                 rightGlovePosition.z =  (snapshot.val().Boxer.RightGlove.z);
 
             });
-        }
+        
 
             rightPad.position = rightPadPosition;
             leftPad.position = leftPadPosition;
@@ -200,23 +200,44 @@
             leftGlove.position = leftGlovePosition;
 
             if(Math.abs(leftPad.position.x-leftGlove.position.x) < leftPad.width/2 &&
-               Math.abs(leftPad.position.y-leftGlove.position.y) < leftPad.height/2){
-                if(leftGlove.position.z<0){score++;}
+               Math.abs(leftPad.position.y-leftGlove.position.y) < leftPad.height/2 &&
+               leftGlove.position.z<0
+               ){
+                    if(tick%1000 == 1){
+                        score++;
+                    }
+                tick++;
                 
                }
-            if(Math.abs(leftPad.position.x-rightGlove.position.x) < leftPad.width/2 &&
-               Math.abs(leftPad.position.y-rightGlove.position.y) < leftPad.height/2){
-                if(rightGlove.position.z<0){score++;}
+            else if(Math.abs(leftPad.position.x-rightGlove.position.x) < leftPad.width/2 &&
+               Math.abs(leftPad.position.y-rightGlove.position.y) < leftPad.height/2 &&
+               rightGlove.position.z<0
+               ){
+                    if(tick%1000 == 1){
+                        score++;
+                    }
+                    tick++;
                }
 
-            if(Math.abs(rightPad.position.x-leftGlove.position.x) < rightPad.width/2 &&
-               Math.abs(rightPad.position.y-leftGlove.position.y) < rightPad.height/2){
-                if(leftGlove.position.z<0){score++;}
+            else if(Math.abs(rightPad.position.x-leftGlove.position.x) < rightPad.width/2 &&
+               Math.abs(rightPad.position.y-leftGlove.position.y) < rightPad.height/2 &&
+               leftGlove.position.z<0
+               ){
+                    if(tick%1000 == 1){
+                        score++;
+                    }
+                    tick++;
                }
-            if(Math.abs(rightPad.position.x-rightGlove.position.x) < rightPad.width/2 &&
-               Math.abs(rightPad.position.y-rightGlove.position.y) < rightPad.height/2){
-                if(rightGlove.position.z<0){score++;}
+            else if(Math.abs(rightPad.position.x-rightGlove.position.x) < rightPad.width/2 &&
+               Math.abs(rightPad.position.y-rightGlove.position.y) < rightPad.height/2 &&
+               rightGlove.position.z<0
+               ){
+                    if(tick%1000 == 1){
+                        score++;
+                    }
+                    tick++;
                }
+            else{tick = 0;}
                dynamicTexture.drawText("Score: "+score, null, null, "60px solid Arial", "red", "white");
                 scene.render();
         });
