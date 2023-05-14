@@ -104,12 +104,76 @@
             leftPad.position.y = leftPadPosition.y;
             leftPad.position.z = leftPadPosition.z;
 
+
             rightPad.position.x = rightPadPosition.x;
             rightPad.position.y = rightPadPosition.y;
             rightPad.position.z = rightPadPosition.z;
 
             leftPad.material = redMaterial;
             rightPad.material = redMaterial;
+            
+            var leftPositions = [];
+            for (var i = 0; i < 60; i++) {
+                var x = -5 + Math.random() * 5;
+                var y = Math.random() * 5;
+                var position = new BABYLON.Vector3(x, y, 0);
+                leftPositions.push(position);
+            }
+            var rightPositions = [];
+            for (var i = 0; i < 60; i++) {
+                var x = Math.random() * 5;
+                var y = Math.random() * 5;
+                var position = new BABYLON.Vector3(x, y, 0);
+                rightPositions.push(position);
+            }
+
+            // set initial position of the left pad
+            leftPad.position = leftPositions[0];
+            rightPad.position = rightPositions[0];
+
+            // create animation to move left pad between positions
+            var leftAnimation = new BABYLON.Animation(
+            "leftPadAnimation",
+            "position",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+            );
+
+            // create animation to move right pad between positions
+            var rightAnimation = new BABYLON.Animation(
+            "rightPadAnimation",
+            "position",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+            );
+
+            // define animation keyframes
+            var leftKeys = [];
+            for (var i = 0; i < leftPositions.length; i++) {
+                leftKeys.push({
+                frame: i * 100,
+                value: leftPositions[i]
+                });
+            }
+            leftAnimation.setKeys(leftKeys);
+
+            var rightKeys = [];
+            for (var i = 0; i < rightPositions.length; i++) {
+                rightKeys.push({
+                frame: i * 100,
+                value: rightPositions[i]
+                });
+            }
+            rightAnimation.setKeys(rightKeys);
+
+            scene.beginDirectAnimation(leftPad, [leftAnimation], 0, leftPositions.length * 100, true);
+            scene.beginDirectAnimation(rightPad, [rightAnimation], 0, rightPositions.length * 100, true);
+
+            engine.runRenderLoop(function () {
+            scene.render();
+            });
             
             var leftPositions = [];
             for (var i = 0; i < 60; i++) {
@@ -239,79 +303,46 @@
         // Register a render loop to repeatedly render the scene
         var tick = 0;
         engine.runRenderLoop(function () {
-            
-           
-            fetch('http://localhost:8000/Boxer')
-                .then(response => response.json())
-                .then(data => {
-                leftGlovePosition.x = data.LeftGlove.x;
-                leftGlovePosition.y = data.LeftGlove.y;
-                leftGlovePosition.z = data.LeftGlove.z;
+            tick++;
+            if(tick%1 == 0){
+            const r = ref(database, '/Game/');
+            onValue(r, (snapshot) => {
+                
+                leftGlovePosition.x =  (snapshot.val().Boxer.LeftGlove.x);
+                leftGlovePosition.y =  (snapshot.val().Boxer.LeftGlove.y);
 
+                rightGlovePosition.x =  (snapshot.val().Boxer.RightGlove.x);
+                rightGlovePosition.y =  (snapshot.val().Boxer.RightGlove.y);
 
-                rightGlovePosition.x = data.RightGlove.x;
-                rightGlovePosition.y = data.RightGlove.y;
-                rightGlovePosition.z = data.RightGlove.y;
+                leftGlovePosition.z =  (snapshot.val().Boxer.LeftGlove.z);
+                rightGlovePosition.z =  (snapshot.val().Boxer.RightGlove.z);
 
-                console.log(leftGlovePosition, rightGlovePosition);
-                })
-        
+            });
+        }
 
-            //rightPad.position.x = rightPadPosition.x;
-            //leftPad.position = leftPadPosition;
+            rightPad.position = rightPadPosition;
+            leftPad.position = leftPadPosition;
             rightGlove.position = rightGlovePosition;
             leftGlove.position = leftGlovePosition;
 
-            if(Math.abs(leftPad.position.x-leftGlove.position.x) < 1 &&
-               Math.abs(leftPad.position.y-leftGlove.position.y) < 1.5 &&
-               leftGlove.position.z<=-1
-               ){
-                console.log("hit: "+tick)
-                    if(tick%1000 == 0){
-                        score++;
-                    }
-                tick++;
+            if(Math.abs(leftPad.position.x-leftGlove.position.x) < leftPad.width/2 &&
+               Math.abs(leftPad.position.y-leftGlove.position.y) < leftPad.height/2){
+                if(leftGlove.position.z<0){score++;}
                 
                }
-            else if(Math.abs(leftPad.position.x-rightGlove.position.x) < 1&&
-               Math.abs(leftPad.position.y-rightGlove.position.y) < 1.5 &&
-               rightGlove.position.z<=-1
-               ){
-                console.log("hit: "+tick)
-                    if(tick%1000 == 0){
-                        score++;
-                    }
-                    tick++;
+            if(Math.abs(leftPad.position.x-rightGlove.position.x) < leftPad.width/2 &&
+               Math.abs(leftPad.position.y-rightGlove.position.y) < leftPad.height/2){
+                if(rightGlove.position.z<0){score++;}
                }
 
-            else if(Math.abs(rightPad.position.x-leftGlove.position.x) < 1&&
-               Math.abs(rightPad.position.y-leftGlove.position.y) < 1.5 &&
-               leftGlove.position.z<=-1
-               ){
-                console.log("hit: "+tick)
-                    if(tick%1000 == 0){
-                        score++;
-                    }
-                    tick++;
+            if(Math.abs(rightPad.position.x-leftGlove.position.x) < rightPad.width/2 &&
+               Math.abs(rightPad.position.y-leftGlove.position.y) < rightPad.height/2){
+                if(leftGlove.position.z<0){score++;}
                }
-            else if(Math.abs(rightPad.position.x-rightGlove.position.x) < 1 &&
-               Math.abs(rightPad.position.y-rightGlove.position.y) < 1.5 &&
-               rightGlove.position.z<=-1
-               ){
-                console.log("hit: "+tick)
-                    if(tick%1000 == 0){
-                        score++;
-                    }
-                    tick++;
+            if(Math.abs(rightPad.position.x-rightGlove.position.x) < rightPad.width/2 &&
+               Math.abs(rightPad.position.y-rightGlove.position.y) < rightPad.height/2){
+                if(rightGlove.position.z<0){score++;}
                }
-            else{
-               // console.log(Math.abs(rightPad.position.x-rightGlove.position.x) +" "+
-             //  Math.abs(rightPad.position.y-rightGlove.position.y))
-                tick = 0;
-                console.log(Math.abs(leftPad.position.x-rightGlove.position.x) +" "+
-               Math.abs(leftPad.position.y-rightGlove.position.y) +" "+
-               rightGlove.position.z)
-            }
                dynamicTexture.drawText("Score: "+score, null, null, "60px solid Arial", "red", "white");
                 scene.render();
         });
