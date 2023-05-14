@@ -226,7 +226,7 @@
             mat.diffuseTexture = dynamicTexture;
             dynamicTexture.drawText("Score: ", null, null, "100px solid Arial", "white", "red");
             const scoreBox = new BABYLON.MeshBuilder.CreateBox("rectangle", {height: 1.5, width: 1.5, depth: .4}, scene);
-            scoreBox.position = new BABYLON.Vector3(0, 4, 0);
+            scoreBox.position = new BABYLON.Vector3(0, 4, 1);
             scoreBox.material = mat;
 
             
@@ -256,50 +256,59 @@
             });
         
 
-            rightPad.position = rightPadPosition;
-            leftPad.position = leftPadPosition;
-            rightGlove.position = rightGlovePosition;
-            leftGlove.position = leftGlovePosition;
+           // rightPad.position.x = rightPadPosition.x;
+            //leftPad.position = leftPadPosition;
+            //rightGlove.position = rightGlovePosition;
+            //leftGlove.position = leftGlovePosition;
 
-            if(Math.abs(leftPad.position.x-leftGlove.position.x) < leftPad.width/2 &&
-               Math.abs(leftPad.position.y-leftGlove.position.y) < leftPad.height/2 &&
+            if(Math.abs(leftPad.position.x-leftGlove.position.x) < .75 &&
+               Math.abs(leftPad.position.y-leftGlove.position.y) < 1 &&
                leftGlove.position.z<0
                ){
-                    if(tick%1000 == 1){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
                         score++;
                     }
                 tick++;
                 
                }
-            else if(Math.abs(leftPad.position.x-rightGlove.position.x) < leftPad.width/2 &&
-               Math.abs(leftPad.position.y-rightGlove.position.y) < leftPad.height/2 &&
+            else if(Math.abs(leftPad.position.x-rightGlove.position.x) < .75 &&
+               Math.abs(leftPad.position.y-rightGlove.position.y) < 1 &&
                rightGlove.position.z<0
                ){
-                    if(tick%1000 == 1){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
                         score++;
                     }
                     tick++;
                }
 
-            else if(Math.abs(rightPad.position.x-leftGlove.position.x) < rightPad.width/2 &&
-               Math.abs(rightPad.position.y-leftGlove.position.y) < rightPad.height/2 &&
+            else if(Math.abs(rightPad.position.x-leftGlove.position.x) < .75 &&
+               Math.abs(rightPad.position.y-leftGlove.position.y) < 1 &&
                leftGlove.position.z<0
                ){
-                    if(tick%1000 == 1){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
                         score++;
                     }
                     tick++;
                }
-            else if(Math.abs(rightPad.position.x-rightGlove.position.x) < rightPad.width/2 &&
-               Math.abs(rightPad.position.y-rightGlove.position.y) < rightPad.height/2 &&
-               rightGlove.position.z<0
+            else if(Math.abs(rightPad.position.x-rightGlove.position.x) < .75 &&
+               Math.abs(rightPad.position.y-rightGlove.position.y) < 1 &&
+               rightGlove.position.z>0
                ){
-                    if(tick%1000 == 1){
+                //console.log("hit: "+tick)
+                    if(tick%1000 == 0){
                         score++;
                     }
                     tick++;
                }
-            else{tick = 0;}
+            else{
+               // console.log(Math.abs(rightPad.position.x-rightGlove.position.x) +" "+
+             //  Math.abs(rightPad.position.y-rightGlove.position.y))
+                tick = 0;
+            
+            }
                dynamicTexture.drawText("Score: "+score, null, null, "60px solid Arial", "red", "white");
                 scene.render();
         });
