@@ -113,7 +113,7 @@
             rightThumb.parent = rightGlove;
 
             
-            rightThumb.parent = rightGlove;
+            //rightThumb.parent = rightGlove;
 
             const wristMaterial = new BABYLON.StandardMaterial("darkBlue", scene);
             wristMaterial.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.47);
@@ -177,8 +177,8 @@
                 leftGlovePosition.x =  (snapshot.val().Boxer.LeftGlove.x);
                 leftGlovePosition.y =  (snapshot.val().Boxer.LeftGlove.y);
 
-                rightGlovePosition.x =  (snapshot.val().Boxer.LeftGlove.x);
-                rightGlovePosition.y =  (snapshot.val().Boxer.LeftGlove.y);
+                rightGlovePosition.x =  (snapshot.val().Boxer.RightGlove.x);
+                rightGlovePosition.y =  (snapshot.val().Boxer.RightGlove.y);
 
                 leftGlovePosition.z =  (snapshot.val().Boxer.LeftGlove.z);
                 rightGlovePosition.z =  (snapshot.val().Boxer.RightGlove.z);
