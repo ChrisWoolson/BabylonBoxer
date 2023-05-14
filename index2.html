@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Babylon Template</title>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+
+        <script src="babylon.max.js"></script>
+
+    </head>
+
+   <body>
+
+	<canvas id="renderCanvas"></canvas>
+    <!-- <script>
+        var socket = new WebSocket("ws://localhost:8765/");
+        socket.onmessage = function(event) {
+        };
+    </script> -->
+
+	<script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js";
+        import {getDatabase, ref, onValue} from "https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js"
+        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+        const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+       
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJrMVb19TnPlZ23-E2nSTnsDy71MS8T-8",
+            authDomain: "boxerbabylon.firebaseapp.com",
+            databaseURL: "https://boxerbabylon-default-rtdb.firebaseio.com",
+            projectId: "boxerbabylon",
+            storageBucket: "boxerbabylon.appspot.com",
+            messagingSenderId: "366837127431",
+            appId: "1:366837127431:web:6e0825a2bfb503518a4da2",
+            measurementId: "G-N71T6ZGWEB"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+            var leftPadPosition = new BABYLON.Vector3(-1,1,1);
+            var rightPadPosition = new BABYLON.Vector3(1,1,1);
+            var leftGlovePosition = new BABYLON.Vector3(3,1,-3);
+            var rightGlovePosition = new BABYLON.Vector3(-3,1,-3);
+
+            var rightGlove;
+            var rightThumb;
+            var rightWrist;
+            var leftWrist;
+            var leftGlove;
+            var leftThumb;
+
+            var leftPad;
+            var rightPad;
+
+            var dynamicTexture;
+            var mat;
+
+            var score = 0;
+
+            const createScene = function () {
+            // This creates a basic Babylon Scene object (non-mesh)-------------------------------------------------
+            const scene = new BABYLON.Scene(engine);
+            const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -15), scene);
+            camera.setTarget(BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, true);
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.9;
+
+            //Dome-------------------------------------------------------------------------------------------
+            const photoDome = new BABYLON.PhotoDome("testdome", "https://www.shutterstock.com/shutterstock/videos/1075219802/thumb/1.jpg?ip=x480", {size: 100},scene);
+            photoDome.imageMode = BABYLON.PhotoDome.MODE_MONOSCOPIC;
+
+            //Pads-------------------------------------------------------------------------------------------
+            const redMaterial = new BABYLON.StandardMaterial("red", scene);
+
+             rightGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+             rightThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+             rightWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+             leftWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+             leftGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+             leftThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+
+             leftPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+             rightPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+
+
+
+            redMaterial.diffuseColor = new BABYLON.Color3(1,0,0);
+
+            leftPad.position.x = leftPadPosition.x;
+            leftPad.position.y = leftPadPosition.y;
+            leftPad.position.z = leftPadPosition.z;
+            
+
+            rightPad.position.x = rightPadPosition.x;
+            rightPad.position.y = rightPadPosition.y;
+            rightPad.position.z = rightPadPosition.z;
+
+            leftPad.material = redMaterial;
+            rightPad.material = redMaterial;
+
+            //Gloves----------------------------------------------------------------------------------------------------
+
+            
+            rightThumb.parent = rightGlove;
+
+            
+            //rightThumb.parent = rightGlove;
+
+            const wristMaterial = new BABYLON.StandardMaterial("darkBlue", scene);
+            wristMaterial.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.47);
+
+            
+            rightWrist.parent = rightGlove;
+
+            
+            leftWrist.parent = leftGlove;
+
+            rightWrist.material = wristMaterial;
+            leftWrist.material = wristMaterial;
+
+            rightWrist.rotation.x = Math.PI / 2;
+            rightWrist.position.z = -1
+
+            leftWrist.rotation.x = Math.PI / 2;
+            leftWrist.position.z = -1
+            leftThumb.parent = leftGlove;
+
+            rightGlove.material = redMaterial;
+            rightThumb.material = redMaterial;
+            leftGlove.material = redMaterial;
+            leftThumb.material = redMaterial;
+
+            rightGlove.position.x = rightGlovePosition.x;
+            rightGlove.position.y = rightGlovePosition.y;
+            rightGlove.position.z = rightGlovePosition.z;
+            rightThumb.position.x = 0.4;
+            rightThumb.position.y = -0.5;
+            rightThumb.position.z = 0.3;
+
+            leftGlove.position.x = leftGlovePosition.x;
+            leftGlove.position.y = leftGlovePosition.y;
+            leftGlove.position.z = leftGlovePosition.z;
+            leftThumb.position.x = -0.4;
+            leftThumb.position.y = -0.5;
+            leftThumb.position.z = 0.3;
+
+            dynamicTexture = new BABYLON.DynamicTexture("text", {width: 300, height: 300}, scene);
+  
+            mat = new BABYLON.StandardMaterial("mat", scene);
+            mat.diffuseTexture = dynamicTexture;
+            dynamicTexture.drawText("Score: ", null, null, "100px solid Arial", "white", "red");
+            const scoreBox = new BABYLON.MeshBuilder.CreateBox("rectangle", {height: 1.5, width: 1.5, depth: .4}, scene);
+            scoreBox.position = new BABYLON.Vector3(0, 4, 0);
+            scoreBox.material = mat;
+
+            
+
+            return scene;
+        };
+
+        const scene = createScene(); //Call the createScene function
+
+        // Register a render loop to repeatedly render the scene
+        var tick = 0;
+        engine.runRenderLoop(function () {
+            tick++;
+            if(tick%1 == 0){
+            // const boxerValues = fetch('https://localhost:3000/api/mydata')
+            
+            fetch('http://localhost:8000/Boxer')
+                .then(response => response.json())
+                .then(data => {
+                leftGlovePosition.x = data.LeftGlove.x;
+                leftGlovePosition.y = data.LeftGlove.y;
+                leftGlovePosition.z = data.LeftGlove.z;
+
+                
+                rightGlovePosition.x = data.RightGlove.x;
+                rightGlovePosition.y = data.RightGlove.y;
+                rightGlovePosition.z = data.RightGlove.y;
+
+                console.log(leftGlovePosition, rightGlovePosition);
+                })
+                // .catch(error => console.error(error));
+
+
+            // socket.onmessage = function(event) {
+            // var message = event.data;   
+            // console.log(message);
+            // };
+
+
+            // const r = ref(database, '/Game/');
+            // onValue(r, (snapshot) => {
+                
+                // leftGlovePosition.x =  (snapshot.val().Boxer.LeftGlove.x);
+                // leftGlovePosition.y =  (snapshot.val().Boxer.LeftGlove.y);
+
+                // rightGlovePosition.x =  (snapshot.val().Boxer.RightGlove.x);
+                // rightGlovePosition.y =  (snapshot.val().Boxer.RightGlove.y);
+
+                // leftGlovePosition.z =  (snapshot.val().Boxer.LeftGlove.z);
+                // rightGlovePosition.z =  (snapshot.val().Boxer.RightGlove.z);
+
+            }
+            // );
+        // }
+
+        if(Math.abs(leftPad.position.x-leftGlove.position.x) < .75 &&
+               Math.abs(leftPad.position.y-leftGlove.position.y) < 1 &&
+               leftGlove.position.z<0
+               ){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
+                        score++;
+                    }
+                tick++;
+                
+               }
+            else if(Math.abs(leftPad.position.x-rightGlove.position.x) < .75 &&
+               Math.abs(leftPad.position.y-rightGlove.position.y) < 1 &&
+               rightGlove.position.z<0
+               ){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
+                        score++;
+                    }
+                    tick++;
+               }
+
+            else if(Math.abs(rightPad.position.x-leftGlove.position.x) < .75 &&
+               Math.abs(rightPad.position.y-leftGlove.position.y) < 1 &&
+               leftGlove.position.z<0
+               ){
+                console.log("hit: "+tick)
+                    if(tick%1000 == 0){
+                        score++;
+                    }
+                    tick++;
+               }
+            else if(Math.abs(rightPad.position.x-rightGlove.position.x) < .75 &&
+               Math.abs(rightPad.position.y-rightGlove.position.y) < 1 &&
+               rightGlove.position.z>0
+               ){
+                //console.log("hit: "+tick)
+                    if(tick%1000 == 0){
+                        score++;
+                    }
+                    tick++;
+               }
+            else{
+               // console.log(Math.abs(rightPad.position.x-rightGlove.position.x) +" "+
+             //  Math.abs(rightPad.position.y-rightGlove.position.y))
+                tick = 0;
+            
+            }
+               dynamicTexture.drawText("Score: "+score, null, null, "60px solid Arial", "red", "white");
+                scene.render();
+        });
+
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () {
+                engine.resize();
+        });
+	</script>
+
+   </body>
+
+</html>
+
