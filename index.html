@@ -28,6 +28,11 @@
    <body>
 
 	<canvas id="renderCanvas"></canvas>
+    <!-- <script>
+        var socket = new WebSocket("ws://localhost:8765/");
+        socket.onmessage = function(event) {
+        };
+    </script> -->
 
 	<script type="module">
         
@@ -88,17 +93,17 @@
             //Pads-------------------------------------------------------------------------------------------
             const redMaterial = new BABYLON.StandardMaterial("red", scene);
 
-             rightGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
-             rightThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
-             rightTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 2.5, diameterY: 2, diameterZ: 2});
-             rightWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
-             leftWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
-             leftGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
-             leftThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
-             leftTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 3, diameterY: 2, diameterZ: 2});
+            rightGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+            rightThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+            rightTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 2.5, diameterY: 2, diameterZ: 2});
+            rightWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+            leftWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+            leftGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+            leftThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+            leftTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 3, diameterY: 2, diameterZ: 2});
 
-             leftPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
-             rightPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+            leftPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+            rightPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
 
 
 
@@ -107,6 +112,7 @@
             leftPad.position.x = leftPadPosition.x;
             leftPad.position.y = leftPadPosition.y;
             leftPad.position.z = leftPadPosition.z;
+            
 
             rightPad.position.x = rightPadPosition.x;
             rightPad.position.y = rightPadPosition.y;
@@ -114,69 +120,6 @@
 
             leftPad.material = redMaterial;
             rightPad.material = redMaterial;
-            
-            var leftPositions = [];
-            for (var i = 0; i < 60; i++) {
-                var x = -5 + Math.random() * 5;
-                var y = Math.random() * 5;
-                var position = new BABYLON.Vector3(x, y, 0);
-                leftPositions.push(position);
-            }
-            var rightPositions = [];
-            for (var i = 0; i < 60; i++) {
-                var x = Math.random() * 5;
-                var y = Math.random() * 5;
-                var position = new BABYLON.Vector3(x, y, 0);
-                rightPositions.push(position);
-            }
-
-            // set initial position of the left pad
-            leftPad.position = leftPositions[0];
-            rightPad.position = rightPositions[0];
-
-            // create animation to move left pad between positions
-            var leftAnimation = new BABYLON.Animation(
-            "leftPadAnimation",
-            "position",
-            60,
-            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-            );
-
-            // create animation to move right pad between positions
-            var rightAnimation = new BABYLON.Animation(
-            "rightPadAnimation",
-            "position",
-            60,
-            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-            );
-
-            // define animation keyframes
-            var leftKeys = [];
-            for (var i = 0; i < leftPositions.length; i++) {
-                leftKeys.push({
-                frame: i * 100,
-                value: leftPositions[i]
-                });
-            }
-            leftAnimation.setKeys(leftKeys);
-
-            var rightKeys = [];
-            for (var i = 0; i < rightPositions.length; i++) {
-                rightKeys.push({
-                frame: i * 100,
-                value: rightPositions[i]
-                });
-            }
-            rightAnimation.setKeys(rightKeys);
-
-            scene.beginDirectAnimation(leftPad, [leftAnimation], 0, leftPositions.length * 100, true);
-            scene.beginDirectAnimation(rightPad, [rightAnimation], 0, rightPositions.length * 100, true);
-
-            engine.runRenderLoop(function () {
-            scene.render();
-            });
 
             //Gloves----------------------------------------------------------------------------------------------------
 
@@ -188,7 +131,7 @@
 
             const wristMaterial = new BABYLON.StandardMaterial("darkBlue", scene);
             wristMaterial.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.47);
-            
+
             leftTip.material = redMaterial;
             leftTip.parent = leftGlove;
             leftTip.position.x = -0.2;
@@ -200,7 +143,7 @@
             rightTip.position.x = 0.2;
             rightTip.position.y = -0.2;
             rightTip.position.z = 1;
-     
+
             rightWrist.parent = rightGlove;
 
             
@@ -224,8 +167,8 @@
             rightGlove.position.x = rightGlovePosition.x;
             rightGlove.position.y = rightGlovePosition.y;
             rightGlove.position.z = rightGlovePosition.z;
-            rightThumb.position.x = 0.4;
-            rightThumb.position.y = -0.8;
+            rightThumb.position.x = 0.8;
+            rightThumb.position.y = -0.5;
             rightThumb.position.z = 0.3;
 
             leftGlove.position.x = leftGlovePosition.x;
@@ -241,7 +184,7 @@
             mat.diffuseTexture = dynamicTexture;
             dynamicTexture.drawText("Score: ", null, null, "100px solid Arial", "white", "red");
             const scoreBox = new BABYLON.MeshBuilder.CreateBox("rectangle", {height: 1.5, width: 1.5, depth: .4}, scene);
-            scoreBox.position = new BABYLON.Vector3(0, 4, 1);
+            scoreBox.position = new BABYLON.Vector3(0, 4, 0);
             scoreBox.material = mat;
 
             
@@ -254,8 +197,11 @@
         // Register a render loop to repeatedly render the scene
         var tick = 0;
         engine.runRenderLoop(function () {
-        
-            fetch('http://localhost:3000/Boxer')
+            tick++;
+            if(tick%1 == 0){
+            // const boxerValues = fetch('https://localhost:3000/api/mydata')
+            
+            fetch('http://localhost:8000/Boxer')
                 .then(response => response.json())
                 .then(data => {
                 leftGlovePosition.x = data.LeftGlove.x;
@@ -269,16 +215,34 @@
 
                 console.log(leftGlovePosition, rightGlovePosition);
                 })
-        
+                // .catch(error => console.error(error));
 
-            rightPad.position.x = rightPadPosition.x;
-            leftPad.position = leftPadPosition;
-            rightGlove.position = rightGlovePosition;
-            leftGlove.position = leftGlovePosition;
 
-            if(Math.abs(leftPad.position.x-leftGlove.position.x) < .75 &&
+            // socket.onmessage = function(event) {
+            // var message = event.data;   
+            // console.log(message);
+            // };
+
+
+            // const r = ref(database, '/Game/');
+            // onValue(r, (snapshot) => {
+                
+                // leftGlovePosition.x =  (snapshot.val().Boxer.LeftGlove.x);
+                // leftGlovePosition.y =  (snapshot.val().Boxer.LeftGlove.y);
+
+                // rightGlovePosition.x =  (snapshot.val().Boxer.RightGlove.x);
+                // rightGlovePosition.y =  (snapshot.val().Boxer.RightGlove.y);
+
+                // leftGlovePosition.z =  (snapshot.val().Boxer.LeftGlove.z);
+                // rightGlovePosition.z =  (snapshot.val().Boxer.RightGlove.z);
+
+            }
+            // );
+        // }
+
+        if(Math.abs(leftPad.position.x-leftGlove.position.x) < .75 &&
                Math.abs(leftPad.position.y-leftGlove.position.y) < 1 &&
-               leftGlove.position.z<1
+               leftGlove.position.z<0
                ){
                 console.log("hit: "+tick)
                     if(tick%1000 == 0){
@@ -289,7 +253,7 @@
                }
             else if(Math.abs(leftPad.position.x-rightGlove.position.x) < .75 &&
                Math.abs(leftPad.position.y-rightGlove.position.y) < 1 &&
-               rightGlove.position.z<1
+               rightGlove.position.z<0
                ){
                 console.log("hit: "+tick)
                     if(tick%1000 == 0){
@@ -300,7 +264,7 @@
 
             else if(Math.abs(rightPad.position.x-leftGlove.position.x) < .75 &&
                Math.abs(rightPad.position.y-leftGlove.position.y) < 1 &&
-               leftGlove.position.z>1
+               leftGlove.position.z<0
                ){
                 console.log("hit: "+tick)
                     if(tick%1000 == 0){
@@ -310,7 +274,7 @@
                }
             else if(Math.abs(rightPad.position.x-rightGlove.position.x) < .75 &&
                Math.abs(rightPad.position.y-rightGlove.position.y) < 1 &&
-               rightGlove.position.z>1
+               rightGlove.position.z>0
                ){
                 //console.log("hit: "+tick)
                     if(tick%1000 == 0){

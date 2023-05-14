@@ -61,10 +61,12 @@
             var rightGlovePosition = new BABYLON.Vector3(-3,1,-3);
 
             var rightGlove;
+            var rightTip;
             var rightThumb;
             var rightWrist;
             var leftWrist;
             var leftGlove;
+            var leftTip;
             var leftThumb;
 
             var leftPad;
@@ -91,15 +93,17 @@
             //Pads-------------------------------------------------------------------------------------------
             const redMaterial = new BABYLON.StandardMaterial("red", scene);
 
-             rightGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
-             rightThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
-             rightWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
-             leftWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
-             leftGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
-             leftThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+            rightGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+            rightThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+            rightTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 2.5, diameterY: 2, diameterZ: 2});
+            rightWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+            leftWrist = BABYLON.MeshBuilder.CreateCylinder("cylinder", {height: 1, diameterTop: 1.5, tessellation: 0}, scene);
+            leftGlove = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene)
+            leftThumb = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1, segments: 32}, scene)
+            leftTip = BABYLON.MeshBuilder.CreateSphere("sphere", {diameterX: 3, diameterY: 2, diameterZ: 2});
 
-             leftPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
-             rightPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+            leftPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
+            rightPad = BABYLON.MeshBuilder.CreateBox("rectangle", {height: 2, width: 1.5, depth: .4}, scene);
 
 
 
@@ -128,7 +132,18 @@
             const wristMaterial = new BABYLON.StandardMaterial("darkBlue", scene);
             wristMaterial.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.47);
 
-            
+            leftTip.material = redMaterial;
+            leftTip.parent = leftGlove;
+            leftTip.position.x = -0.2;
+            leftTip.position.y = -0.2;
+            leftTip.position.z = 1;
+
+            rightTip.material = redMaterial;
+            rightTip.parent = rightGlove;
+            rightTip.position.x = 0.2;
+            rightTip.position.y = -0.2;
+            rightTip.position.z = 1;
+
             rightWrist.parent = rightGlove;
 
             
@@ -152,14 +167,14 @@
             rightGlove.position.x = rightGlovePosition.x;
             rightGlove.position.y = rightGlovePosition.y;
             rightGlove.position.z = rightGlovePosition.z;
-            rightThumb.position.x = 0.4;
+            rightThumb.position.x = 0.8;
             rightThumb.position.y = -0.5;
             rightThumb.position.z = 0.3;
 
             leftGlove.position.x = leftGlovePosition.x;
             leftGlove.position.y = leftGlovePosition.y;
             leftGlove.position.z = leftGlovePosition.z;
-            leftThumb.position.x = -0.4;
+            leftThumb.position.x = -0.8;
             leftThumb.position.y = -0.5;
             leftThumb.position.z = 0.3;
 
