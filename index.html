@@ -103,7 +103,6 @@
             leftPad.position.x = leftPadPosition.x;
             leftPad.position.y = leftPadPosition.y;
             leftPad.position.z = leftPadPosition.z;
-            
 
             rightPad.position.x = rightPadPosition.x;
             rightPad.position.y = rightPadPosition.y;
@@ -111,6 +110,69 @@
 
             leftPad.material = redMaterial;
             rightPad.material = redMaterial;
+            
+            var leftPositions = [];
+            for (var i = 0; i < 60; i++) {
+                var x = -5 + Math.random() * 5;
+                var y = Math.random() * 5;
+                var position = new BABYLON.Vector3(x, y, 0);
+                leftPositions.push(position);
+            }
+            var rightPositions = [];
+            for (var i = 0; i < 60; i++) {
+                var x = Math.random() * 5;
+                var y = Math.random() * 5;
+                var position = new BABYLON.Vector3(x, y, 0);
+                rightPositions.push(position);
+            }
+
+            // set initial position of the left pad
+            leftPad.position = leftPositions[0];
+            rightPad.position = rightPositions[0];
+
+            // create animation to move left pad between positions
+            var leftAnimation = new BABYLON.Animation(
+            "leftPadAnimation",
+            "position",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+            );
+
+            // create animation to move right pad between positions
+            var rightAnimation = new BABYLON.Animation(
+            "rightPadAnimation",
+            "position",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+            );
+
+            // define animation keyframes
+            var leftKeys = [];
+            for (var i = 0; i < leftPositions.length; i++) {
+                leftKeys.push({
+                frame: i * 100,
+                value: leftPositions[i]
+                });
+            }
+            leftAnimation.setKeys(leftKeys);
+
+            var rightKeys = [];
+            for (var i = 0; i < rightPositions.length; i++) {
+                rightKeys.push({
+                frame: i * 100,
+                value: rightPositions[i]
+                });
+            }
+            rightAnimation.setKeys(rightKeys);
+
+            scene.beginDirectAnimation(leftPad, [leftAnimation], 0, leftPositions.length * 100, true);
+            scene.beginDirectAnimation(rightPad, [rightAnimation], 0, rightPositions.length * 100, true);
+
+            engine.runRenderLoop(function () {
+            scene.render();
+            });
 
             //Gloves----------------------------------------------------------------------------------------------------
 
